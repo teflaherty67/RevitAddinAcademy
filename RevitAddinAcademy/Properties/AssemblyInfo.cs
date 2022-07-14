@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RevitAddinAcademy")]
-[assembly: AssemblyDescription("Revit Add-In Description for RevitAddinAcademy")]
+[assembly: AssemblyDescription("New Revit Add-in")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Autodesk Inc.")]
-[assembly: AssemblyProduct("RevitAddinAcademy Revit C# .NET Add-In")]
-[assembly: AssemblyCopyright("Copyright (C) 2020 by Jeremy Tammik, Autodesk Inc.")]
+[assembly: AssemblyCompany("TEdward Coder")]
+[assembly: AssemblyProduct("Revit C# .NET Add-In")]
+[assembly: AssemblyCopyright("Copyright (C) 2022 by TEdward")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
