@@ -14,7 +14,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace RevitAddinAcademy
 {
     [Transaction(TransactionMode.Manual)]
-    public class Sheets : IExternalCommand
+    public class cmdSession02 : IExternalCommand
     {
         public Result Execute(
           ExternalCommandData commandData,
@@ -26,7 +26,7 @@ namespace RevitAddinAcademy
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
 
-            string excelFile = @"C:\Users\tefla\Dropbox\Training\ArchSmarter\Revit Add-in Academy\Session 02\Session02_CombinationSheetList-220706-171323.xlsx";
+            string excelFile = @"C:\Users\tefla\Dropbox\Training\ArchSmarter\Revit Add-in Academy\Session 02\Session 02_Combination Sheet List.xlsx";
 
             Excel.Application excelApp = new Excel.Application();
             Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);
