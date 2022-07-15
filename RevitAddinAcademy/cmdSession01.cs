@@ -21,59 +21,35 @@ namespace RevitAddinAcademy
           ref string message,
           ElementSet elements)
         {
-            int range = 300;
-
             UIApplication uiapp = commandData.Application;
             UIDocument uidoc = uiapp.ActiveUIDocument;
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
 
-            int number = 1;
-            double number2 = 10.5;
             string text = "Revit Add-in Academy";
-            XYZ point = new XYZ(0,0,0);
-            XYZ point2 = new XYZ(0,0,0);
+            string fileName = doc.PathName;
 
-            double math = number * number2 + 100;
-            double math2 = math % number2;
+            double offset = 0.05;
+            double offsetCalc = offset * doc.ActiveView.Scale;
 
-            List<string> strings = new List<string>();
-            strings.Add("item 1");
-            strings.Add("item 2");
-
-            List<XYZ> points = new List<XYZ>();
-            points.Add(point);
-            points.Add(point2);
-
-            for(int i = 1;i<+100;i++)
-            {
-                number = number + i;
-            }
-
-            string newString = "";
-            foreach(string s in strings)
-            {
-                if (s == "item 1")
-                {
-                    newString = "got to 1";
-                }
-                else if (s == "item 2")
-                {
-                    newString = "got to 2";
-                }
-                else
-                {
-                    newString = "got somewhere else";
-                }
-                newString = newString + s;
-            }
-
-            double newNumber = Method01(100, 100);
+            XYZ curPoint = new XYZ(0,0,0);
+            XYZ offsetPoint = new XYZ(0,offsetCalc,0);            
 
             FilteredElementCollector collector = new FilteredElementCollector(doc);
             collector.OfClass(typeof(TextNoteType));
 
-            TextNote curnote = TextNote.Create(doc, doc.ActiveView.Id, point, "This is my text note", collector.FirstElementId());
+            Transaction t = new Transaction(doc, "Create Text note");
+            t.Start();
+
+            int range = 100;
+            for (int i = 1; i <=100; i++)
+            {
+                TextNote curnote = TextNote.Create(doc, doc.ActiveView.Id, curPoint, "This is Line " + i.ToString(), collector.FirstElementId());
+                curPoint = curPoint.Subtract(offsetPoint);
+            }
+
+            t.Commit();
+            t.Dispose();
             
             return Result.Succeeded;
         }
