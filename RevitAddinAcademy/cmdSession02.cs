@@ -26,7 +26,7 @@ namespace RevitAddinAcademy
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
 
-            string excelFile = @"C:\Users\tefla\Dropbox\Training\ArchSmarter\Revit Add-in Academy\Session 02\Session 02_Combination Sheet List.xlsx";
+            string excelFile = @"C:\temp\Session 02_Combination Sheet List.xlsx";
 
             Excel.Application excelApp = new Excel.Application();
             Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);

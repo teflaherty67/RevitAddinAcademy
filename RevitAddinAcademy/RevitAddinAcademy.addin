@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RevitAddIns>
-  <AddIn Type="Command Session 02">
-    <Text>Command RevitAddinAcademy</Text>
+  <AddIn Type="Command">
+    <Text>Command Session 02</Text>
     <Description>Some description for RevitAddinAcademy</Description>
     <Assembly>RevitAddinAcademy.dll</Assembly>
     <FullClassName>RevitAddinAcademy.cmdSession02</FullClassName>
