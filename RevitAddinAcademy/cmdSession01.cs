@@ -7,6 +7,7 @@ using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 
 #endregion
 
@@ -67,7 +68,23 @@ namespace RevitAddinAcademy
                 newString = newString + s;
             }
 
+            double newNumber = Method01(100, 100);
+
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(TextNoteType));
+
+            TextNote curnote = TextNote.Create(doc, doc.ActiveView.Id, point, "This is my text note", collector.FirstElementId());
+            
             return Result.Succeeded;
+        }
+
+        internal double Method01(double a, double b)
+        {
+            double c = a + b;
+
+            Debug.Print("Got here " + c.ToString());
+
+            return c;
         }
     }
 }
