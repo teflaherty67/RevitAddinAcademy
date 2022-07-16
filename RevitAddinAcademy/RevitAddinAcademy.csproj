@@ -58,7 +58,7 @@
     <Compile Include="App.cs" />
     <Compile Include="cmdSession01.cs" />
     <Compile Include="cmdDeleteBackups.cs" />
-    <Compile Include="cmdSession02.cs" />
+    <Compile Include="Command.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
