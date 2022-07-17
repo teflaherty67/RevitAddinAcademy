@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RevitAddIns>
   <AddIn Type="Command">
-    <Text>Command</Text>
+    <Text>Session 02 Skills</Text>
     <Description>Some description for RevitAddinAcademy</Description>
     <Assembly>RevitAddinAcademy.dll</Assembly>
-    <FullClassName>RevitAddinAcademy.command</FullClassName>
+    <FullClassName>RevitAddinAcademy.cmdSession02Skills</FullClassName>
     <ClientId>CFC2A46D-4D2B-45F9-8852-D7FB81DD64DD</ClientId>
     <VendorId>com.typepad.thebuildingcoder</VendorId>
     <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
