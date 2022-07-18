@@ -57,7 +57,7 @@ namespace RevitAddinAcademy
                     if(Viewport.CanAddViewToSheet(doc, colSheets.FirstElementId(), curView.Id))
                     {
                         // check if view has dependent views
-                        if(curView.GetDependentViewIds().Count() == 0)
+                        if(curView.GetDependentViewIds().Count == 0)
                         {
                             // add views to lis of views to delete
                             viewsToDelete.Add(curView);
@@ -66,9 +66,31 @@ namespace RevitAddinAcademy
                 }
             }
 
+            // start a transaction
+            using (Transaction t = new Transaction(doc))
+            {
+                t.Start("Delete Unused Views");
 
+                // loop through list of views to delete
+                try
+                {
+                    foreach(View deleteView in viewsToDelete)
+                    {
+                        // delete the views
+                        doc.Delete(deleteView.Id);
+                    }
+                }
+                catch (Exception)
+                {
+                    TaskDialog.Show("Error", "Could not delete view");
+                }
 
+                // close the transaction
+                t.Commit();
+            }
 
+            // alert the user
+            TaskDialog.Show("Complete", "Deleted " + viewsToDelete.Count.ToString() + " views.");
 
             return Result.Succeeded;
         }
