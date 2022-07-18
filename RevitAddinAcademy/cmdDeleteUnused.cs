@@ -14,7 +14,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 namespace RevitAddinAcademy
 {
     [Transaction(TransactionMode.Manual)]
-    public class cmdProjectSetup : IExternalCommand
+    public class cmdDeleteUnused : IExternalCommand
     {
         public Result Execute(
           ExternalCommandData commandData,
@@ -26,87 +26,49 @@ namespace RevitAddinAcademy
             Application app = uiapp.Application;
             Document doc = uidoc.Document;
 
-            string excelFile = @"C:\temp\Session 02_Challenge.xlsx";
-            int levelCounter = 0;
+            // create list of views to delete
+            List<View> viewsToDelete = new List<View>();
 
-            try
+            // create list of views to keep
+            List<View> viewsToKeep = new List<View>();
+
+            // get all the views in the project
+            FilteredElementCollector colViews = new FilteredElementCollector(doc);
+            colViews.OfCategory(BuiltInCategory.OST_Views);
+
+            // get all the sheets in the project
+            FilteredElementCollector colSheets = new FilteredElementCollector(doc);
+            colSheets.OfClass(typeof(ViewSheet));
+
+            // make sure there are sheets in the project
+            if(colSheets.GetElementCount() < 1)
             {
-                // open excel
-                Excel.Application excelApp = new Excel.Application();
-                Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);
+                // alert user
+                TaskDialog.Show("Error", "There are no sheets in the project. Please add some");
+            }
 
-                Excel.Worksheet excelWs1 = excelWb.Worksheets.Item[1];
-                Excel.Worksheet excelWs2 = excelWb.Worksheets.Item[2];
-
-                Excel.Range excelRng1 = excelWs1.UsedRange;
-                Excel.Range excelRng2 = excelWs2.UsedRange;
-
-                int rowCount1 = excelRng1.Rows.Count;
-                int rowCount2 = excelRng2.Rows.Count;
-
-
-                using (Transaction t = new Transaction(doc))
+            // loop through views
+            foreach(View curView in colViews)
+            {
+                // check if view name has a prefix
+                if(curView.Name.Contains("working_") == false)
                 {
-                    t.Start("Setup project");
-
-                    for (int i = 2; i <= rowCount1; i++)
+                    // check if view is already on a sheet
+                    if(Viewport.CanAddViewToSheet(doc, colSheets.FirstElementId(), curView.Id))
                     {
-                        Excel.Range levelData1 = excelWs1.Cells[i, 1];
-                        Excel.Range levelData2 = excelWs1.Cells[i, 2];
-
-                        string levelName = levelData1.Value.ToString();
-                        double levelElev = levelData2.Value;
-
-                        try
+                        // check if view has dependent views
+                        if(curView.GetDependentViewIds().Count() == 0)
                         {
-                            Level newLevel = Level.Create(doc, levelElev);
-                            newLevel.Name = levelName;
-                            levelCounter++;
+                            // add views to lis of views to delete
+                            viewsToDelete.Add(curView);
                         }
-                        catch (Exception ex)
-                        {
-                            Debug.Print(ex.Message);
-                        }
-
                     }
-
-                    FilteredElementCollector colSheet = new FilteredElementCollector(doc);
-                    colSheet.OfCategory(BuiltInCategory.OST_TitleBlocks);
-                    colSheet.WhereElementIsElementType();
-
-                    for (int j = 2; j <= rowCount2; j++)
-                    {
-                        Excel.Range sheetData1 = excelWs2.Cells[j, 1];
-                        Excel.Range sheetData2 = excelWs2.Cells[j, 2];
-
-                        string sheetNum = sheetData1.Value.ToString();
-                        string sheetName = sheetData2.Value.ToString();
-
-                        try
-                        {
-                            ViewSheet newSheet = ViewSheet.Create(doc, colSheet.FirstElementId());
-                            newSheet.SheetNumber = sheetNum;
-                            newSheet.Name = sheetName;
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Print(ex.Message);
-                        }
-
-                    }
-
-                    t.Commit();
                 }
-
-                excelWb.Close();
-                excelApp.Quit();
-            }
-            catch (Exception ex)
-            {
-                Debug.Print(ex.Message);
             }
 
-            TaskDialog.Show("Complete", "Created " + levelCounter.ToString() + " levels.");
+
+
+
 
             return Result.Succeeded;
         }
