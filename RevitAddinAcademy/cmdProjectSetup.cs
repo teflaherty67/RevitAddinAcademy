@@ -27,36 +27,86 @@ namespace RevitAddinAcademy
             Document doc = uidoc.Document;
 
             string excelFile = @"C:\temp\Session 02_Challenge.xlsx";
-            
-            // open Excel
+            int levelCounter = 0;
 
-            Excel.Application excelApp = new Excel.Application();
-            Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);
-
-            Excel.Worksheet excelWs1 = excelWb.Worksheets.Item[1];
-            Excel.Worksheet excelWs2 = excelWb.Worksheets.Item[2];
-
-            Excel.Range excelRng1 = excelWs1.UsedRange;
-            Excel.Range excelRng2 = excelWs2.UsedRange;
-
-            int rowCount1 = excelRng1.Rows.Count;
-            int rowCount2 = excelRng2.Rows.Count;
-
-            for(int i = 2; i <=rowCount1; i++)
+            try
             {
+                // open excel
+                Excel.Application excelApp = new Excel.Application();
+                Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);
 
+                Excel.Worksheet excelWs1 = excelWb.Worksheets.Item[1];
+                Excel.Worksheet excelWs2 = excelWb.Worksheets.Item[2];
+
+                Excel.Range excelRng1 = excelWs1.UsedRange;
+                Excel.Range excelRng2 = excelWs2.UsedRange;
+
+                int rowCount1 = excelRng1.Rows.Count;
+                int rowCount2 = excelRng2.Rows.Count;
+
+
+                using (Transaction t = new Transaction(doc))
+                {
+                    t.Start("Setup project");
+
+                    for (int i = 2; i <= rowCount1; i++)
+                    {
+                        Excel.Range levelData1 = excelWs1.Cells[i, 1];
+                        Excel.Range levelData2 = excelWs1.Cells[i, 2];
+
+                        string levelName = levelData1.Value.ToString();
+                        double levelElev = levelData2.Value;
+
+                        try
+                        {
+                            Level newLevel = Level.Create(doc, levelElev);
+                            newLevel.Name = levelName;
+                            levelCounter++;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Print(ex.Message);
+                        }
+
+                    }
+
+                    FilteredElementCollector colSheet = new FilteredElementCollector(doc);
+                    colSheet.OfCategory(BuiltInCategory.OST_TitleBlocks);
+                    colSheet.WhereElementIsElementType();
+
+                    for (int j = 2; j <= rowCount2; j++)
+                    {
+                        Excel.Range sheetData1 = excelWs2.Cells[j, 1];
+                        Excel.Range sheetData2 = excelWs2.Cells[j, 2];
+
+                        string sheetNum = sheetData1.Value.ToString();
+                        string sheetName = sheetData2.Value.ToString();
+
+                        try
+                        {
+                            ViewSheet newSheet = ViewSheet.Create(doc, colSheet.FirstElementId());
+                            newSheet.SheetNumber = sheetNum;
+                            newSheet.Name = sheetName;
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.Print(ex.Message);
+                        }
+
+                    }
+
+                    t.Commit();
+                }
+
+                excelWb.Close();
+                excelApp.Quit();
+            }
+            catch (Exception ex)
+            {
+                Debug.Print(ex.Message);
             }
 
-            for(int j = 2; j <=rowCount2; j++)
-            {
-
-            }
-
-
-
-            excelWb.Close();
-            excelApp.Quit();
-           
+            TaskDialog.Show("Complete", "Created " + levelCounter.ToString() + " levels.");
 
             return Result.Succeeded;
         }
