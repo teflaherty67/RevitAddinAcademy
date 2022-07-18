@@ -59,6 +59,7 @@
     <Compile Include="cmdSession01Challenge.cs" />
     <Compile Include="cmdDeleteBackups.cs" />
     <Compile Include="cmdProjectSetup.cs" />
+    <Compile Include="cmdSession03Skills.cs" />
     <Compile Include="cmdSession02Skills.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
