@@ -29,7 +29,24 @@ namespace RevitAddinAcademy
 
             Forms.OpenFileDialog dialog = new Forms.OpenFileDialog();
             dialog.InitialDirectory = @"c:\";
+            dialog.Multiselect = false;
+            dialog.Filter = "Revit Files | *.rvt; *.rfa";
 
+            string filePath = "";
+            string[] filePaths;
+            if(dialog.ShowDialog() == Forms.DialogResult.OK)
+            {
+                // filePath = dialog.FileName;
+                filePaths = dialog.FileNames;
+            }
+
+            Forms.FolderBrowserDialog folderDialog = new Forms.FolderBrowserDialog();
+
+            string folderPath = "";
+            if(folderDialog.ShowDialog() == Forms.DialogResult.OK)
+            {
+                folderPath = folderDialog.SelectedPath;
+            }
             
             return Result.Succeeded;
         }
