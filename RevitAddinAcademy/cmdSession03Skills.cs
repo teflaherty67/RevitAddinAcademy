@@ -7,7 +7,6 @@ using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Excel = Microsoft.Office.Interop.Excel;
 using Forms = System.Windows.Forms;
 
 #endregion
@@ -66,7 +65,6 @@ namespace RevitAddinAcademy
 
             ViewFamilyType curVFT = null;
             ViewFamilyType curRCPVFT = null;
-
             foreach(ViewFamilyType curElem in collector)
             {
                 if (curElem.ViewFamily == ViewFamily.FloorPlan)
@@ -79,6 +77,10 @@ namespace RevitAddinAcademy
                 }
              }
 
+            FilteredElementCollector collector2 = new FilteredElementCollector(doc);
+            collector2.OfCategory(BuiltInCategory.OST_TitleBlocks);
+            collector2.WhereElementIsElementType();
+
             using (Transaction t = new Transaction(doc))
             {
                 t.Start("Create Levels & Views");
@@ -88,10 +90,50 @@ namespace RevitAddinAcademy
                 ViewPlan curRCP = ViewPlan.Create(doc, curRCPVFT.Id, newLevel.Id);
                 curRCP.Name = curRCP.Name + " RCP";
 
+                View existingView = GetViewByName(doc, "Level 1");
+
+                ViewSheet newSheet = ViewSheet.Create(doc, collector2.FirstElementId());
+
+                if(existingView != null)
+                {
+                    Viewport newVP = Viewport.Create(doc, newSheet.Id, curPlan.Id, new XYZ(0, 0, 0));
+                }
+                else
+                {
+                    TaskDialog.Show("Error", "Could not find view");
+                }
+
+                newSheet.Name = "Test Sheet";
+                newSheet.SheetNumber = "A101.01";
+
+                foreach(Parameter curParam in newSheet.Parameters)
+                {
+                    if(curParam.Definition.Name == "Drawn By")
+                    {
+                        curParam.Set("TEF");
+                    }
+                }
+
                 t.Commit();
             }            
 
             return Result.Succeeded;
+        }
+
+        internal View GetViewByName(Document doc, string viewName)
+        {
+            FilteredElementCollector collector = new FilteredElementCollector(doc);
+            collector.OfClass(typeof(View));
+
+            foreach (View curView in collector)
+            {
+                if (curView.Name == viewName)
+                {
+                    return curView;
+                }
+            }
+
+            return null;
         }
 
         internal struct TestStruct
