@@ -46,8 +46,7 @@ namespace RevitAddinAcademy
             {
                 // open excel
                 Excel.Application excelApp = new Excel.Application();
-                Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);
-              
+                Excel.Workbook excelWb = excelApp.Workbooks.Open(excelFile);              
 
                 Excel.Worksheet excelWs1 = GetExcelWorksheetByName(excelWb, "Levels");
                 Excel.Worksheet excelWs2 = GetExcelWorksheetByName(excelWb, "Sheets");
@@ -87,8 +86,15 @@ namespace RevitAddinAcademy
                         newSheet.SheetNumber = curSheet.SheetNumber;
                         newSheet.Name = curSheet.SheetName;
 
-                        SetParameterValue(curSheet, "Drawn By" , curSheet.DrawnBy);
-                       
+                        SetParameterValue(newSheet, "Drawn By", curSheet.DrawnBy);
+                        SetParameterValue(newSheet, "Checked By", curSheet.CheckedBy);
+
+                        View curView = GetViewByName(doc, curSheet.SheetView);
+
+                        if(curView != null)
+                        {
+                            Viewport curVP = Viewport.Create(doc, newSheet.Id, curView.Id, new XYZ(1, 1, 0));
+                        }
                     } 
 
                     t.Commit();
@@ -103,6 +109,20 @@ namespace RevitAddinAcademy
             TaskDialog.Show("Complete", "Created " + levelCounter.ToString() + " levels.");
 
             return Result.Succeeded;
+        }
+
+        private View GetViewByName(Document doc, string viewName)
+        {
+           FilteredElementCollector colViews = new FilteredElementCollector(doc);
+            colViews.OfCategory(BuiltInCategory.OST_Views);
+
+            foreach(View curView in colViews)
+            {
+                if (curView.Name == viewName)
+                    return curView;
+            }
+
+            return null;
         }
 
         private void SetParameterValue(ViewSheet newSheet, string paramName, string paramValue)
