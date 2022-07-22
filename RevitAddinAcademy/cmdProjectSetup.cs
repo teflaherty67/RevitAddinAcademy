@@ -55,67 +55,45 @@ namespace RevitAddinAcademy
                 List<LevelStruct> levelData = GetLevelDataFromExcel(excelWs1);
                 List<SheetStruct> sheetData = GetSheetDataFromExcel(excelWs2);
 
-                Excel.Range excelRng1 = excelWs1.UsedRange;
-                Excel.Range excelRng2 = excelWs2.UsedRange;
-
-                int rowCount1 = excelRng1.Rows.Count;
-                int rowCount2 = excelRng2.Rows.Count;
+                excelWb.Close();
+                excelApp.Quit();
 
                 using (Transaction t = new Transaction(doc))
                 {
                     t.Start("Setup project");
 
-                    for (int i = 2; i <= rowCount1; i++)
+                    ViewFamilyType planVFT = GetViewFamilyType(doc, "plan");
+                    ViewFamilyType rcpVFT = GetViewFamilyType(doc, "rcp");
+
+                    foreach (LevelStruct curlevel in levelData)
                     {
-                        Excel.Range levelData1 = excelWs1.Cells[i, 1];
-                        Excel.Range levelData2 = excelWs1.Cells[i, 2];
+                        Level newLevel = Level.Create(doc, curlevel.LevelElev);
+                        newLevel.Name = curlevel.LevelName;
+                        levelCounter++;
 
-                        string levelName = levelData1.Value.ToString();
-                        double levelElev = levelData2.Value;
+                        ViewPlan curFloorPlan = ViewPlan.Create(doc, planVFT.Id, newLevel.Id);
+                        ViewPlan curRCP = ViewPlan.Create(doc, rcpVFT.Id, newLevel.Id);
 
-                        try
-                        {
-                            Level newLevel = Level.Create(doc, levelElev);
-                            newLevel.Name = levelName;
-                            levelCounter++;
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Print(ex.Message);
-                        }
-
-                    }
+                        curRCP.Name = curRCP.Name + " RCP";
+                    }                       
 
                     FilteredElementCollector colSheet = new FilteredElementCollector(doc);
                     colSheet.OfCategory(BuiltInCategory.OST_TitleBlocks);
                     colSheet.WhereElementIsElementType();
 
-                    for (int j = 2; j <= rowCount2; j++)
+                    foreach (SheetStruct curSheet in sheetData)
                     {
-                        Excel.Range sheetData1 = excelWs2.Cells[j, 1];
-                        Excel.Range sheetData2 = excelWs2.Cells[j, 2];
+                        ViewSheet newSheet = ViewSheet.Create(doc, colSheet.FirstElementId());
+                        newSheet.SheetNumber = curSheet.SheetNumber;
+                        newSheet.Name = curSheet.SheetName;
 
-                        string sheetNum = sheetData1.Value.ToString();
-                        string sheetName = sheetData2.Value.ToString();
-
-                        try
-                        {
-                            ViewSheet newSheet = ViewSheet.Create(doc, colSheet.FirstElementId());
-                            newSheet.SheetNumber = sheetNum;
-                            newSheet.Name = sheetName;
-                        }
-                        catch (Exception ex)
-                        {
-                            Debug.Print(ex.Message);
-                        }
-
-                    }
+                        SetParameterValue(curSheet, "Drawn By" , curSheet.DrawnBy);
+                       
+                    } 
 
                     t.Commit();
                 }
 
-                excelWb.Close();
-                excelApp.Quit();
             }
             catch (Exception ex)
             {
@@ -127,31 +105,85 @@ namespace RevitAddinAcademy
             return Result.Succeeded;
         }
 
-        private List<LevelStruct> GetLevelDataFromExcel(Excel.Worksheet excelWs1)
+        private void SetParameterValue(ViewSheet newSheet, string paramName, string paramValue)
+        {
+            foreach(Parameter curParam in newSheet.Parameters)
+            {
+                if(curParam.Definition.Name == paramName)
+                {
+                    curParam.Set(paramValue);
+                }
+            }
+        }
+
+        private ViewFamilyType GetViewFamilyType(Document doc, string type)
+        {
+            FilteredElementCollector colVFT = new FilteredElementCollector(doc);
+            colVFT.OfClass(typeof(ViewFamilyType));
+
+            foreach(ViewFamilyType vft in colVFT)
+            {
+                if(vft.ViewFamily == ViewFamily.FloorPlan && type == "plan")
+                {
+                    return vft;
+                }
+                else if(vft.ViewFamily == ViewFamily.CeilingPlan && type == "rcp")
+                {
+                    return vft;
+                }
+            }
+
+            return null;
+        }
+
+        private List<LevelStruct> GetLevelDataFromExcel(Excel.Worksheet excelWs)
         {
             List<LevelStruct> returnList = new List<LevelStruct>();
-            Excel.Range excelRng1 = excelWs1.UsedRange;
+            Excel.Range excelRng = excelWs.UsedRange;
            
-            int rowCount1 = excelRng1.Rows.Count;
+            int rowCount = excelRng.Rows.Count;
 
-            for (int i = 2; i <= rowCount1; i++)
+            for (int i = 2; i <= rowCount; i++)
             {
-                Excel.Range levelData1 = excelWs1.Cells[i, 1];
-                Excel.Range levelData2 = excelWs1.Cells[i, 2];
+                Excel.Range levelData1 = excelWs.Cells[i, 1];
+                Excel.Range levelData2 = excelWs.Cells[i, 2];
 
                 string levelName = levelData1.Value.ToString();
                 double levelElev = levelData2.Value;
 
-                LevelStruct curlevel = new LevelStruct(levelName, levelElev);
-                returnList.Add(curlevel);
+                LevelStruct curLevel = new LevelStruct(levelName, levelElev);
+                returnList.Add(curLevel);
             }
 
             return returnList;
         }
 
-        private List<SheetStruct> GetSheetDataFromExcel(Excel.Worksheet excelWs2)
+        private List<SheetStruct> GetSheetDataFromExcel(Excel.Worksheet excelWs)
         {
-            
+            List<SheetStruct> returnList = new List<SheetStruct>();
+            Excel.Range excelRng = excelWs.UsedRange;
+
+            int rowCount = excelRng.Rows.Count;
+
+            for (int i = 2; i <= rowCount; i++)
+            {
+                Excel.Range sheetData1 = excelWs.Cells[i, 1];
+                Excel.Range sheetData2 = excelWs.Cells[i, 2];
+                Excel.Range sheetData3 = excelWs.Cells[i, 3];
+                Excel.Range sheetData4 = excelWs.Cells[i, 4];
+                Excel.Range sheetData5 = excelWs.Cells[i, 5];              
+
+                SheetStruct curSheet = new SheetStruct();
+                curSheet.SheetNumber = sheetData1.Value.ToString();
+                curSheet.SheetName = sheetData2.Value.ToString();
+                curSheet.SheetView = sheetData3.Value.ToString();
+                curSheet.DrawnBy = sheetData4.Value.ToString();
+                curSheet.CheckedBy = sheetData5.Value.ToString();
+
+                returnList.Add(curSheet);
+            }
+
+            return returnList;
         }
 
         private Excel.Worksheet GetExcelWorksheetByName(Excel.Workbook curWb, string wsName)
