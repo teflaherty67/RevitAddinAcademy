@@ -74,28 +74,28 @@ namespace RevitAddinAcademy
                         ViewPlan curRCP = ViewPlan.Create(doc, rcpVFT.Id, newLevel.Id);
 
                         curRCP.Name = curRCP.Name + " RCP";
-                    }                       
+                    }
 
-                    FilteredElementCollector colSheet = new FilteredElementCollector(doc);
-                    colSheet.OfCategory(BuiltInCategory.OST_TitleBlocks);
-                    colSheet.WhereElementIsElementType();
+                    FilteredElementCollector colSheet = GetTitleblock(doc);
 
                     foreach (SheetStruct curSheet in sheetData)
                     {
                         ViewSheet newSheet = ViewSheet.Create(doc, colSheet.FirstElementId());
+
                         newSheet.SheetNumber = curSheet.SheetNumber;
                         newSheet.Name = curSheet.SheetName;
-
                         SetParameterValue(newSheet, "Drawn By", curSheet.DrawnBy);
                         SetParameterValue(newSheet, "Checked By", curSheet.CheckedBy);
 
                         View curView = GetViewByName(doc, curSheet.SheetView);
 
-                        if(curView != null)
+                        if (curView != null)
                         {
-                            Viewport curVP = Viewport.Create(doc, newSheet.Id, curView.Id, new XYZ(1, 1, 0));
+                            Viewport curVP = Viewport.Create(doc, newSheet.Id, curView.Id, new XYZ(1.25, 1.25, 0));
                         }
-                    } 
+
+                        sheetCounter++;
+                    }
 
                     t.Commit();
                 }
@@ -107,8 +107,17 @@ namespace RevitAddinAcademy
             }
 
             TaskDialog.Show("Complete", "Created " + levelCounter.ToString() + " levels.");
+            TaskDialog.Show("Complete", "Created " + sheetCounter.ToString() + " sheets.");
 
             return Result.Succeeded;
+        }
+
+        private static FilteredElementCollector GetTitleblock(Document doc)
+        {
+            FilteredElementCollector colSheet = new FilteredElementCollector(doc);
+            colSheet.OfCategory(BuiltInCategory.OST_TitleBlocks);
+            colSheet.WhereElementIsElementType();
+            return colSheet;
         }
 
         private View GetViewByName(Document doc, string viewName)
