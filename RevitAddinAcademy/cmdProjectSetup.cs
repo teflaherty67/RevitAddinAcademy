@@ -84,10 +84,10 @@ namespace RevitAddinAcademy
 
                         newSheet.SheetNumber = curSheet.SheetNumber;
                         newSheet.Name = curSheet.SheetName;
-                        SetParameterValue(newSheet, "Drawn By", curSheet.DrawnBy);
-                        SetParameterValue(newSheet, "Checked By", curSheet.CheckedBy);
+                        Utility.SetParameterValue(newSheet, "Drawn By", curSheet.DrawnBy);
+                        Utility.SetParameterValue(newSheet, "Checked By", curSheet.CheckedBy);
 
-                        View curView = GetViewByName(doc, curSheet.SheetView);
+                        View curView = Utility.GetViewByName(doc, curSheet.SheetView);
 
                         if (curView != null)
                         {
@@ -120,30 +120,7 @@ namespace RevitAddinAcademy
             return colSheet;
         }
 
-        private View GetViewByName(Document doc, string viewName)
-        {
-           FilteredElementCollector colViews = new FilteredElementCollector(doc);
-            colViews.OfCategory(BuiltInCategory.OST_Views);
-
-            foreach(View curView in colViews)
-            {
-                if (curView.Name == viewName)
-                    return curView;
-            }
-
-            return null;
-        }
-
-        private void SetParameterValue(ViewSheet newSheet, string paramName, string paramValue)
-        {
-            foreach(Parameter curParam in newSheet.Parameters)
-            {
-                if(curParam.Definition.Name == paramName)
-                {
-                    curParam.Set(paramValue);
-                }
-            }
-        }
+       
 
         private ViewFamilyType GetViewFamilyType(Document doc, string type)
         {
