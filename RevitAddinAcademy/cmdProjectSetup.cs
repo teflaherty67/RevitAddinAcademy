@@ -30,7 +30,7 @@ namespace RevitAddinAcademy
             Forms.OpenFileDialog dialog = new Forms.OpenFileDialog();
             dialog.InitialDirectory = @"S:\Shared Folders\Lifestyle USA Design\04-Customization";
             dialog.Multiselect = false;
-            dialog.Filter = "Excel Files | *.xls; *.xlsx; | All files | *.*";
+            dialog.Filter = "Excel Files | *.xls; *.xlsx; *.xlsm | All files | *.*";
 
             if (dialog.ShowDialog() != Forms.DialogResult.OK)
             {
