@@ -120,7 +120,7 @@ namespace RevitAddinAcademy
         private PipeType GetPipeTypeByName(Document doc, string typeName)
         {
             FilteredElementCollector colPipeType = new FilteredElementCollector(doc);
-            colPipeType.OfClass(typeof(MEPSystemType));
+            colPipeType.OfClass(typeof(PipeType));
 
             foreach (Element curElem in colPipeType)
             {
