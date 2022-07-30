@@ -58,9 +58,25 @@ namespace RevitAddinAcademy
                         XYZ startPoint = curCurve.GetEndPoint(0);
                         XYZ endPoint = curCurve.GetEndPoint(1);
 
-                        // Wall newWall = Wall.Create(doc, curCurve, curWallType.Id, curLevel.Id, 15, 0, false, false);
-                        Pipe newPipe = Pipe.Create(doc, curSystemType.Id, curPipeType.Id, curLevel.Id, startPoint, endPoint);
+                        switch (curGS.Name)
+                        {
+                            case "<Medium>":
+                                Debug.Print("found a medium line");
+                                break;
 
+                            case "<Thin Lines>":
+                                Debug.Print("found a thin line");
+                                break;
+
+                            case "<Wide Lines>":
+                                Pipe newPipe = Pipe.Create(doc, curSystemType.Id, curPipeType.Id, curLevel.Id, startPoint, endPoint);
+                                break;
+
+                                default:
+                                Debug.Print("found somnething else");
+                                break;
+                        }
+                                                
                         Debug.Print(curGS.Name);
                     }
                 }
