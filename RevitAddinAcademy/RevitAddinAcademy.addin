@@ -10,15 +10,6 @@
     <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
   </AddIn>
   <AddIn Type="Command">
-    <Text>Walls From Lines</Text>
-    <Description>Some description for RevitAddinAcademy</Description>
-    <Assembly>RevitAddinAcademy.dll</Assembly>
-    <FullClassName>RevitAddinAcademy.cmdWallsFromLines</FullClassName>
-    <ClientId>4CFC441F-3EE3-4486-94A6-53740C51A4A3</ClientId>
-    <VendorId>com.typepad.thebuildingcoder</VendorId>
-    <VendorDescription>The Building Coder, http://thebuildingcoder.typepad.com</VendorDescription>
-  </AddIn>
-  <AddIn Type="Command">
     <Text>Session 03 Skills</Text>
     <Description>Some description for RevitAddinAcademy</Description>
     <Assembly>RevitAddinAcademy.dll</Assembly>
