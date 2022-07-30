@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="cmdSession04Skills.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="cmdDeleteUnused.cs" />
     <Compile Include="cmdSession01Challenge.cs" />
