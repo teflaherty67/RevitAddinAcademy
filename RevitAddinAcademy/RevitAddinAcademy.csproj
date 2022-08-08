@@ -59,7 +59,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="cmdWallsFromLines.cs" />
     <Compile Include="cmdSession04Skills.cs" />
+    <Compile Include="frmWallsFromLines.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmWallsFromLines.Designer.cs">
+      <DependentUpon>frmWallsFromLines.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utility.cs" />
     <Compile Include="cmdDeleteUnused.cs" />
     <Compile Include="cmdSession01Challenge.cs" />
@@ -100,6 +107,11 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="frmWallsFromLines.resx">
+      <DependentUpon>frmWallsFromLines.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
